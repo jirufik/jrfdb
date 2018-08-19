@@ -101,7 +101,7 @@ async function createFiveBags(key) {
   * [Connection](docs/jrfdbconnection.md#[connection](#connection))
     * [setConnection](docs/jrfdbconnection.md#[setconnection](#setconnection))
     * [getStrConnect](docs/jrfdbconnection.md#[getStrConnect](#getStrConnect))
-    * [connect](docs/jrfdbconnection.md#[connect](#connect))
+    * [connect](docs/jrfdbconnection.md#connect)
     * [disconnect](docs/jrfdbconnection.md#[disconnect](#disconnect))
   * [Schemes](docs/jrfdbschemes.md#[schemes](#schemes))
     * [addScheme](docs/jrfdbschemes.md#[addScheme](#addScheme))
