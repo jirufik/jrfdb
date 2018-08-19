@@ -17,7 +17,7 @@
 ### Пример добавления в коллекцию refuse
 
 ```js
-const jrfDb = require('../jrfDb');
+const jrfdb = require('../jrfdb');
 
 //---- Описываем схему коллекции ----
 let refuse = {
@@ -41,7 +41,7 @@ let refuse = {
 async function addRefuse() {
 
     //---- Получаем схему ----
-    let scheme = await jrfDb.getScheme('refuse');
+    let scheme = await jrfdb.getScheme('refuse');
 
     //---- Объект с массивом добавляемых документов ----
     let obj = {
@@ -57,16 +57,16 @@ async function addRefuse() {
 async function initDB() {
 
     //---- Создаем схему ----
-    await jrfDb.addScheme(refuse);
+    await jrfdb.addScheme(refuse);
 
     //---- Настраиваем глобальную строку подключения ----
     //---- По умолчанию схемы используют глобальную строку подключения ----
     //---- Но у каждой схемы можно настроить свою строку подключения локально ----
     let connect = { port: 26000, db: 'logsTest' };
-    await jrfDb.setConnection(connect);
+    await jrfdb.setConnection(connect);
 
     //---- Подключаем ----
-    await jrfDb.connect();
+    await jrfdb.connect();
 
     //---- Добавляем документы ----
     await addRefuse();
@@ -125,7 +125,7 @@ async function initDB() {
 В данной коллекции содержится свойство документа типа **dbref**. Данное поле ссылается на коллекцию **refuse**.
 
 ```js
-const jrfDb = require('../jrfDb');
+const jrfdb = require('../jrfdb');
 
 //---- Описываем схему коллекции ----
 let logs = {
@@ -202,7 +202,7 @@ let logs = {
 
 async function addLog() {
 
-    let scheme = await jrfDb.getScheme('logs');
+    let scheme = await jrfdb.getScheme('logs');
     let obj = {
         docs: {
             bucket: 'super bucket',
@@ -305,7 +305,7 @@ async function addLog() {
 ```js
 async function getLog() {
 
-    let scheme = await jrfDb.getScheme('logs');
+    let scheme = await jrfdb.getScheme('logs');
     let obj = {
         query: {
             find: {
@@ -410,7 +410,7 @@ async function getLog() {
 ```js
 async function editLogOriginal() {
 
-    let scheme = await jrfDb.getScheme('logs');
+    let scheme = await jrfdb.getScheme('logs');
 
     let obj = {
         originalMethod: true,
@@ -437,7 +437,7 @@ async function editLogOriginal() {
 ```js
 async function editLog() {
 
-    let scheme = await jrfDb.getScheme('logs');
+    let scheme = await jrfdb.getScheme('logs');
 
     let obj = {
         docs: {
@@ -530,7 +530,7 @@ async function editLog() {
 ```js
 async function delRefuse() {
 
-    let scheme = await jrfDb.getScheme('refuse');
+    let scheme = await jrfdb.getScheme('refuse');
 
     let obj = {
         filter: {

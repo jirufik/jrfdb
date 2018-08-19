@@ -7,7 +7,7 @@
 ## Installation
 
 ```bash
-$ npm i jrfDb --save
+$ npm i jrfdb --save
 ```
 
 Это простая async/await mongoDB orm для Nodejs. Состоит из модели и схем.
@@ -27,7 +27,7 @@ $ npm i jrfDb --save
 ## Usage
 
 ```js
-const jrfDb = require('jrfDb');
+const jrfdb = require('jrfdb');
 
 // ----------- SCHEMES -----------
 
@@ -59,13 +59,13 @@ let typeBags = {
 
 async function initDB() {
 
-    await jrfDb.addScheme(typeBodys);
-    await jrfDb.addScheme(typeBags);
+    await jrfdb.addScheme(typeBodys);
+    await jrfdb.addScheme(typeBags);
 
-    let scheme = await jrfDb.getScheme('typeBags');
+    let scheme = await jrfdb.getScheme('typeBags');
     scheme.setConnection({db: 'jrfThingsTests'});
 
-    await jrfDb.connect();
+    await jrfdb.connect();
 
 }
 
@@ -73,7 +73,7 @@ async function initDB() {
 
 async function createBody() {
 
-    let scheme = await jrfDb.getScheme('typeBodys');
+    let scheme = await jrfdb.getScheme('typeBodys');
 
     let obj = {
         docs: {name: 'coupe', _id: '5b706ac8453a393a68c4f943'}
@@ -85,7 +85,7 @@ async function createBody() {
 
 async function createFiveBags(key) {
 
-    let scheme = await jrfDb.getScheme('typeBags');
+    let scheme = await jrfdb.getScheme('typeBags');
 
     let obj = {
         docs: [{name: 'suitcase'}, {name: 'handbag'}, {name: 'package'},

@@ -1,5 +1,5 @@
 {
-  "name": "jrfDb",
+  "name": "jrfdb",
   "version": "1.0.0",
   "description": "Simple async/await orm for Node.js.",
   "main": "jrfDb.js",

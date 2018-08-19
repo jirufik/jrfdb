@@ -55,7 +55,7 @@ boolean - true если добавление прошло удачно, инач
 ### Пример
 
 ```js
-const jrfDb = require('../jrfDb');
+const jrfdb = require('../jrfdb');
 
 let logs = {
     name: 'logs',
@@ -128,11 +128,11 @@ let logs = {
     }
 };
 
-await jrfDb.addScheme(logs);
+await jrfdb.addScheme(logs);
 
 let connect = { port: 26000 };
-await jrfDb.setConnection(connect);
-await jrfDb.connect();
+await jrfdb.setConnection(connect);
+await jrfdb.connect();
 ```
 
 ---
