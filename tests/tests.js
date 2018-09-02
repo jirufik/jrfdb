@@ -21,6 +21,17 @@ let typeBodys = {
     }
 };
 
+let dates = {
+    name: 'dates',
+    fields: {
+        date: {
+            description: 'Date',
+            type: 'date',
+            unique: true
+        }
+    }
+};
+
 let typeWheels = {
     name: 'typeWheels',
     fields: {
@@ -171,6 +182,7 @@ async function initDBs() {
     await jrfDb.addScheme(typeBags);
     await jrfDb.addScheme(things);
     await jrfDb.addScheme(cars);
+    await jrfDb.addScheme(dates);
 
     let connect = {port: 26000, db: 'jrfCarsTests'};
     await jrfDb.setConnection(connect);
@@ -188,6 +200,126 @@ async function initDBs() {
 let tests = {
 
 // ----------- ADD TESTS ----------
+
+    async createInvalidDateString(key) {
+
+        let scheme = await jrfDb.getScheme('dates');
+
+        let obj = {
+            docs: {date: 'invalid'}
+        };
+
+        let res = await scheme.add(obj);
+
+        if (!res.okay) {
+            glObj.countValid++;
+            return;
+        }
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+        // console.log(JSON.stringify(res, null, 4));
+    },
+
+    async createInvalidDateObject(key) {
+
+        let scheme = await jrfDb.getScheme('dates');
+
+        let obj = {
+            docs: {date: {}}
+        };
+
+        let res = await scheme.add(obj);
+
+        if (!res.okay) {
+            glObj.countValid++;
+            return;
+        }
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+        // console.log(JSON.stringify(res, null, 4));
+    },
+
+    async createValidDate(key) {
+
+        let scheme = await jrfDb.getScheme('dates');
+
+        let now = new Date();
+        let obj = {
+            docs: {date: now}
+        };
+
+        let res = await scheme.add(obj);
+
+        if (res.okay) {
+            glObj.countValid++;
+            return;
+        }
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+        // console.log(JSON.stringify(res, null, 4));
+    },
+
+    async getDateBefore(key) {
+
+        let scheme = await jrfDb.getScheme('dates');
+        let now = new Date();
+        let res = await scheme.get({
+            query: {
+                find: {
+                    date: {
+                        $lt: now
+                    }
+                }
+            }
+        });
+
+        let okay = res.okay;
+
+        if (okay) {
+            if (res.output.length !== 1) {
+                okay = false;
+            }
+        }
+
+        if (res.okay) {
+            glObj.countValid++;
+            return;
+        }
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+        // console.log(JSON.stringify(res, null, 4));
+    },
+
+    async getDateAfter(key) {
+
+        let scheme = await jrfDb.getScheme('dates');
+        let now = new Date();
+        let res = await scheme.get({
+            query: {
+                find: {
+                    date: {
+                        $gt: now
+                    }
+                }
+            }
+        });
+
+        let okay = res.okay;
+
+        if (okay) {
+            if (res.output.length !== 0) {
+                okay = false;
+            }
+        }
+
+        if (res.okay) {
+            glObj.countValid++;
+            return;
+        }
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+        // console.log(JSON.stringify(res, null, 4));
+    },
 
     async createInvalidBodyNamez(key) {
 
@@ -1584,6 +1716,8 @@ async function deleteAllDocs() {
     scheme = await jrfDb.getScheme('typeBags');
     res = await scheme.del({filter: {}});
     scheme = await jrfDb.getScheme('things');
+    res = await scheme.del({filter: {}});
+    scheme = await jrfDb.getScheme('dates');
     res = await scheme.del({filter: {}});
     // console.log(JSON.stringify(res, null, 4));
 

@@ -214,14 +214,6 @@ class JRFDB {
 
     ////--------- END SCHEME ---------
 
-    async inc() {
-        this.counter++;
-    }
-
-    async dec() {
-        this.counter++;
-    }
-
 }
 
 let jrfd = new JRFDB();
@@ -999,6 +991,16 @@ class Scheme {
                 }
             }
 
+            /// date
+            if (doc.hasOwnProperty(path + field) && fieldValue.type === 'date') {
+                docValue = doc[path + field];
+                if (Object.prototype.toString.call(docValue) !== '[object Date]') {
+                    result.okay = false;
+                    result.description = `Date field not date, path: ${path + field}`;
+                    return result;
+                }
+            }
+
             /// string
             if (doc.hasOwnProperty(path + field) && fieldValue.type === 'string') {
 
@@ -1256,6 +1258,15 @@ class Scheme {
                         if (fieldValue.max && elArr.length > fieldValue.max) {
                             result.okay = false;
                             result.description = `String field  "${elArr}" > ${fieldValue.max} chars length, path: ${path + field}`;
+                            return result;
+                        }
+
+
+                    } else if (fieldValue.typeArray === 'date') {
+
+                        if (Object.prototype.toString.call(elArr) !== '[object Date]') {
+                            result.okay = false;
+                            result.description = `Date field "${elArr}" not date, path: ${path + field}`;
                             return result;
                         }
 

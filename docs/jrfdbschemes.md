@@ -37,8 +37,8 @@
 | Name | Type | Description |
 | :--- | :--- | :--- |
 | **description** | string | Описание поля |
-| type | string | Тип значения поля может быть: string, number, boolean, array, object, dbref. |
-| typeArray | string | Тип елементов массива: string, number, boolean, array, object, dbref. |
+| type | string | Тип значения поля может быть: string, number, date, boolean, array, object, dbref. |
+| typeArray | string | Тип елементов массива: string, number, date, boolean, array, object, dbref. |
 | required | boolean | Если true то поле обязательно для заполнения, иначе не обязательно. |
 | unique | boolean | Если true то значение поля должно быть уникальным среди всех документов |
 | max | number | Если type = string тогда максимальная длина значения. Если type = number тогда максимально допустимое число значения. Если type = array то максимальное количество элементов масива. |
