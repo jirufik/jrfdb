@@ -1,8 +1,8 @@
-# [Connection](#Connection)
+# [Connection](#connection)
 
 ---
 
-## [setConnection](#setConnection)
+## [setConnection](#setconnection)
 
 Установить строку соединения с БД. Если в текущий момент есть соединение с базой данных, то соединение будет разорвано и заново подключено.
 
@@ -25,7 +25,7 @@
 
 ---
 
-## [getStrConnect](#getStrConnect)
+## [getStrConnect](#getstrconnect)
 
 Получить строку подключения к бд, если какието поля не заполнены то они будут взяты из **jrfDB**
 
@@ -67,7 +67,7 @@ true - подклюение прошло удачно, false - не удалос
 
 ---
 
-## [resetConnect](#resetConnect)
+## [resetConnect](#resetconnect)
 
 Сбросить текущие настройки соединения. Если активно соединение с БД то вызывается **disconnect**.
 

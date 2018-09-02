@@ -1,8 +1,8 @@
-# [Connection](#Connection)
+# [Connection](#connection)
 
 ---
 
-## [setConnection](#setConnection)
+## [setConnection](#setconnection)
 
 Установить строку соединения с БД. Если в текущий момент есть соединение с базой данных, то соединение будет разорвано и заново подключено, так же реконект будет произведен во всех схемах.
 
@@ -25,7 +25,7 @@
 
 ---
 
-## [getStrConnect](#getStrConnect)
+## [getStrConnect](#getstrconnect)
 
 Получить строку подключения к бд.
 

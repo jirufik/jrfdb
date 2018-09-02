@@ -1,8 +1,8 @@
-# [Schemes](#Schemes)
+# [Schemes](#schemes)
 
 ---
 
-## [addScheme](#addScheme)
+## [addScheme](#addscheme)
 
 Добавить схему. Если схема с таким именем существует то она будет перезаписана новой схемой.
 
@@ -137,7 +137,7 @@ await jrfdb.connect();
 
 ---
 
-## [getScheme](#getScheme)
+## [getScheme](#getscheme)
 
 Получить схему по имени или объект содержащий все схемы.
 
@@ -151,7 +151,7 @@ await jrfdb.connect();
 
 ---
 
-## [delScheme](#delScheme)
+## [delScheme](#delscheme)
 
 Удалить схему по имени.
 
