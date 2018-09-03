@@ -1659,7 +1659,7 @@ class Scheme {
         }
 
         if (idOnly) {
-            return res.output[0]._id;
+            return res.output[0]._id.toString();
         }
 
         return res.output[0];
