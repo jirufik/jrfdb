@@ -1634,8 +1634,8 @@ class Scheme {
             }
 
             if (typeof fieldValue === 'object' && Array.isArray(fieldValue)) {
-                for(let el of find[field]) {
-                 await this._idToObjectId(el, field);
+                for (let el of find[field]) {
+                    await this._idToObjectId(el, field);
                 }
             }
 
@@ -2507,6 +2507,10 @@ class Scheme {
     async getObjectID(id) {
 
         // console.log(id);
+        if (!id) {
+            return null;
+        }
+
         if (typeof id === 'string' || typeof id === 'number') {
             try {
                 return objectID(id);
