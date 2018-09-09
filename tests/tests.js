@@ -201,25 +201,6 @@ let tests = {
 
 // ----------- ADD TESTS ----------
 
-    async createInvalidDateString(key) {
-
-        let scheme = await jrfDb.getScheme('dates');
-
-        let obj = {
-            docs: {date: 'invalid'}
-        };
-
-        let res = await scheme.add(obj);
-
-        if (!res.okay) {
-            glObj.countValid++;
-            return;
-        }
-        glObj.countInvalid++;
-        console.log(`invalid test ${key}`);
-        // console.log(JSON.stringify(res, null, 4));
-    },
-
     async createInvalidDateObject(key) {
 
         let scheme = await jrfDb.getScheme('dates');
@@ -244,6 +225,27 @@ let tests = {
         let scheme = await jrfDb.getScheme('dates');
 
         let now = new Date();
+        let obj = {
+            docs: {date: now}
+        };
+
+        let res = await scheme.add(obj);
+
+        if (res.okay) {
+            glObj.countValid++;
+            return;
+        }
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+        // console.log(JSON.stringify(res, null, 4));
+    },
+
+    async createValidDateAsString(key) {
+
+        let scheme = await jrfDb.getScheme('dates');
+
+        let now = '2018-09-09T17:06:12.728Z';
+
         let obj = {
             docs: {date: now}
         };

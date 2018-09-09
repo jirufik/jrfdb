@@ -994,6 +994,16 @@ class Scheme {
             /// date
             if (doc.hasOwnProperty(path + field) && fieldValue.type === 'date') {
                 docValue = doc[path + field];
+
+                if (typeof docValue === 'string') {
+                    try {
+                        docValue = new Date(docValue);
+                        doc[path + field] = docValue;
+                    } catch (e) {
+
+                    }
+                }
+
                 if (Object.prototype.toString.call(docValue) !== '[object Date]') {
                     result.okay = false;
                     result.description = `Date field not date, path: ${path + field}`;
@@ -1263,6 +1273,14 @@ class Scheme {
 
 
                     } else if (fieldValue.typeArray === 'date') {
+
+                        if (typeof elArr === 'string') {
+                            try {
+                                elArr = new Date(elArr);
+                            } catch (e) {
+
+                            }
+                        }
 
                         if (Object.prototype.toString.call(elArr) !== '[object Date]') {
                             result.okay = false;
