@@ -1699,6 +1699,73 @@ let tests = {
         glObj.countInvalid++;
         console.log(`invalid test ${key}`);
 
+    },
+
+    async test_idToObjectId(key) {
+
+        let scheme = await jrfDb.getScheme('typeBodys');
+
+        let okay = true;
+
+        let find = {
+            name: 'Rick',
+            _id: '5b706ac8453a393a68c4f947'
+        };
+        let findOld = Object.assign({}, find);
+
+        await scheme._idToObjectId(find);
+        okay = find._id.equals(objectID(findOld._id));
+
+        if (okay) {
+            find = {
+                name: 'Rick',
+                _id: {$in: ['5b706ac8453a393a68c4f947', '5b706ac8453a393a68c4f948']}
+            };
+            findOld = Object.assign({}, find);
+
+            await scheme._idToObjectId(find);
+            okay = find._id.$in[1].equals(objectID(findOld._id.$in[1]));
+        }
+
+        if (okay) {
+            find = {
+                name: 'Rick',
+                _id: {$nin: ['5b706ac8453a393a68c4f947', '5b706ac8453a393a68c4f948']}
+            };
+            findOld = Object.assign({}, find);
+
+            await scheme._idToObjectId(find);
+            okay = find._id.$nin[0].equals(objectID(findOld._id.$nin[0]));
+        }
+
+        if (okay) {
+            find = {
+                $or: [{name: 'Rick'}, {_id: {$in: ['5b706ac8453a393a68c4f947', '5b706ac8453a393a68c4f948']}}]
+            };
+            findOld = Object.assign({}, find);
+
+            await scheme._idToObjectId(find);
+            okay = find.$or[1]._id.$in[1].equals(objectID(findOld.$or[1]._id.$in[1]));
+        }
+
+        if (okay) {
+            find = {
+                $or: [{name: 'Rick'}, {_id: '5b706ac8453a393a68c4f947'}]
+            };
+            findOld = Object.assign({}, find);
+
+            await scheme._idToObjectId(find);
+            okay = find.$or[1]._id.equals(objectID(findOld.$or[1]._id));
+        }
+
+        if (okay) {
+            glObj.countValid++;
+            return;
+        }
+
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+
     }
 
 };

@@ -1528,17 +1528,7 @@ class Scheme {
         let skip = resHooks.param.query.skip || 0;
         let limit = resHooks.param.query.limit || 0;
 
-        if (find._id) {
-            if (typeof find._id === 'string' || typeof find._id === 'number') {
-                try {
-                    find._id = objectID(find._id);
-                } catch (err) {
-
-                }
-            }
-            // console.log(find._id);
-            // find._id = await this.getObjectID(find._id);
-        }
+        await this._idToObjectId(find);
 
         let collection = db.collection(this.urlConnect.collection);
         output = (await collection.find(find).sort(sort).skip(skip).limit(limit).toArray());
@@ -1566,6 +1556,73 @@ class Scheme {
         }
 
         return result;
+
+    }
+
+    async _idToObjectId(find) {
+
+        for (let field in find) {
+
+            let fieldValue = find[field];
+
+            /// ------- _id -------
+            if (field === '_id' && typeof fieldValue === 'string') {
+                let id = await this.getObjectID(fieldValue);
+                if (id) {
+                    find[field] = id;
+                }
+                continue;
+            }
+
+            /// ------- _id.$in _id.$nin -------
+            if (field === '_id' && typeof fieldValue === 'object') {
+
+                let ids = [];
+                let idsObj = [];
+                if (fieldValue.$in && Array.isArray(fieldValue.$in)) {
+                    ids = fieldValue.$in;
+                }
+
+                if (fieldValue.$nin && Array.isArray(fieldValue.$nin)) {
+                    ids = fieldValue.$nin;
+                }
+
+                if (!ids.length) {
+                    continue;
+                }
+
+                for (let id of ids) {
+                    let idObj = await this.getObjectID(id);
+                    if (idObj) {
+                        idsObj.push(idObj);
+                    }
+                }
+
+                if (fieldValue.$in) {
+                    find[field].$in = idsObj;
+                    continue
+                }
+
+                if (fieldValue.$nin) {
+                    find[field].$nin = idsObj;
+                }
+
+                continue;
+            }
+
+            if (typeof fieldValue === 'object' && !Array.isArray(fieldValue)) {
+                await this._idToObjectId(find[field], field);
+                continue;
+            }
+
+            if (typeof fieldValue === 'object' && Array.isArray(fieldValue)) {
+                for(let el of find[field]) {
+                 await this._idToObjectId(el, field);
+                }
+            }
+
+
+        }
 
     }
 
