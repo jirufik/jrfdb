@@ -968,8 +968,10 @@ class Scheme {
             // console.log(fieldValue);
 
 
-            if (!doc[path + field] && !flFindRequired && fields.requiredOneOf.includes(field)) {
-                continue;
+            if (!doc[path + field] && fields.requiredOneOf) {
+                if (Array.isArray(fields.requiredOneOf) && fields.requiredOneOf.includes(field)) {
+                    continue;
+                }
             }
 
             /// default
