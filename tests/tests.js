@@ -1253,6 +1253,128 @@ let tests = {
 
     },
 
+    async createInvalidCarNotFillRequiredOneOf(key) {
+
+        let scheme = await jrfDb.getScheme('cars');
+
+        let cars = [
+            {
+                name: 'Car5',
+                code: 5,
+                typeBody: glObj.sedan,
+                wheels: [
+                    {
+                        number: 1,
+                        typeWheel: glObj.summer
+                    },
+                    {
+                        number: 2,
+                        typeWheel: glObj.summer
+                    },
+                    {
+                        number: 3,
+                        typeWheel: glObj.winter
+                    },
+                    {
+                        number: 4,
+                        typeWheel: glObj.winter
+                    }
+                ],
+                regNumber: glObj.num777,
+                trunk: [
+                    {typeBag: glObj.package, volume: 12, things: [glObj.pencil, glObj.shit]},
+                    {typeBag: glObj.handbag, volume: 17, things: [glObj.shit]}
+                ]
+            }
+        ];
+
+
+        let obj = {
+            docs: cars
+        };
+
+        res = await scheme.add(obj);
+        let okay = !res.okay;
+        // console.log(JSON.stringify(res, null, 4));
+
+        if (res.output.length) {
+            okay = false;
+        }
+
+        if (res.validation[0].description.indexOf('One of the required fields') === -1) {
+            okay = false;
+        }
+
+        if (okay) {
+            glObj.countValid++;
+            return;
+        }
+
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+
+    },
+
+    async createValidCarNotFillRequiredOneOfWithNull(key) {
+
+        let scheme = await jrfDb.getScheme('cars');
+
+        let cars = [
+            {
+                name: 'Car5',
+                code: 5,
+                typeBody: glObj.sedan,
+                wheels: [
+                    {
+                        number: 1,
+                        typeWheel: glObj.summer
+                    },
+                    {
+                        number: 2,
+                        typeWheel: glObj.summer
+                    },
+                    {
+                        number: 3,
+                        typeWheel: glObj.winter
+                    },
+                    {
+                        number: 4,
+                        typeWheel: glObj.winter
+                    }
+                ],
+                regNumber: glObj.num777,
+                trunk: [
+                    {typeBag: glObj.package, volume: 12, things: [glObj.pencil, glObj.shit]},
+                    {typeBag: glObj.handbag, volume: 17, things: [glObj.shit]}
+                ],
+                rightHandDrive: true,
+                leftHandDrive: null
+            }
+        ];
+
+
+        let obj = {
+            docs: cars
+        };
+
+        res = await scheme.add(obj);
+        let okay = res.okay;
+        // console.log(JSON.stringify(res, null, 4));
+
+        if (res.output.length !== 1) {
+            okay = false;
+        }
+
+        if (okay) {
+            glObj.countValid++;
+            return;
+        }
+
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+
+    },
+
     //// -------- GET --------
 
     async getCars(key) {
@@ -1269,7 +1391,7 @@ let tests = {
         // console.log(JSON.stringify(res, null, 4));
 
         if (okay) {
-            okay = res.output.length === 3;
+            okay = res.output.length === 4;
         }
 
         let car = {};
@@ -1331,7 +1453,7 @@ let tests = {
         // console.log(JSON.stringify(res, null, 4));
 
         if (okay) {
-            okay = res.output.length === 3;
+            okay = res.output.length === 4;
         }
 
         let car = {};
@@ -1393,7 +1515,7 @@ let tests = {
         // console.log(JSON.stringify(res, null, 4));
 
         if (okay) {
-            okay = res.output.length === 3;
+            okay = res.output.length === 4;
         }
 
         let car = {};

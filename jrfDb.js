@@ -967,6 +967,11 @@ class Scheme {
             let fieldValue = fields[path + field];
             // console.log(fieldValue);
 
+
+            if (!doc[path + field] && !flFindRequired && fields.requiredOneOf.includes(field)) {
+                continue;
+            }
+
             /// default
             if (!doc.hasOwnProperty(path + field) && fieldValue.default) {
                 doc[path + field] = fieldValue.default;
