@@ -128,3 +128,9 @@ async function createFiveBags(key) {
     * [edit](docs/schemecrud.md#edit)
     * [del](docs/schemecrud.md#del)  
     
+## Example
+
+ [Simplechat](https://github.com/jirufik/simplechat) is an example of using packages of **jrfdb** and [jrfws](https://github.com/jirufik/jrfws) (api websockets).
+ 
+ ![chat](chat.png)    
+    
