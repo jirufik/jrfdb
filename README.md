@@ -10,7 +10,7 @@
 $ npm i jrfdb --save
 ```
 
-Это простая async/await mongoDB orm для Nodejs. Состоит из модели и схем.
+Это простая async/await mongoDB odm для Nodejs. Состоит из модели и схем.
 
 **jrfdb** - Cодержит схемы.
 

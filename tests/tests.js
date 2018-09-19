@@ -75,6 +75,7 @@ let things = {
         name: {
             description: 'Things',
             type: 'string',
+            regexp: '^[^0-9]+$',
             unique: true,
             min: 3,
             max: 20
@@ -476,6 +477,32 @@ let tests = {
         }
 
         if (okay) {
+            glObj.countValid++;
+            return;
+        }
+
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+
+    },
+
+    async createInvalidThingsRegexp(key) {
+
+        let scheme = await jrfDb.getScheme('things');
+
+        let obj = {
+            docs: {name: 'R2D2'}
+        };
+
+        let res = await scheme.add(obj);
+        let okay = res.okay;
+        // console.log(JSON.stringify(res, null, 4));
+
+        if (res.validation[0].description.indexOf('String field don\'t compare ^[^0-9]+$') === -1) {
+            okay = true;
+        }
+
+        if (!okay) {
             glObj.countValid++;
             return;
         }

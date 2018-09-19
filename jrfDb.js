@@ -1040,6 +1040,15 @@ class Scheme {
                     return result;
                 }
 
+                if (fieldValue.regexp && typeof fieldValue.regexp === 'string') {
+                    let compare = new RegExp(fieldValue.regexp);
+                    if (!compare.test(docValue)) {
+                        result.okay = false;
+                        result.description = `String field don't compare ${fieldValue.regexp} , path: ${path + field}`;
+                        return result;
+                    }
+                }
+
                 if (fieldValue.unique) {
 
                     let findPath = path + field;
@@ -1278,6 +1287,14 @@ class Scheme {
                             return result;
                         }
 
+                        if (fieldValue.regexp && typeof fieldValue.regexp === 'string') {
+                            let compare = new RegExp(fieldValue.regexp);
+                            if (!compare.test(elArr)) {
+                                result.okay = false;
+                                result.description = `String field "${elArr}" don't compare ${fieldValue.regexp} , path: ${path + field}`;
+                                return result;
+                            }
+                        }
 
                     } else if (fieldValue.typeArray === 'date') {
 
