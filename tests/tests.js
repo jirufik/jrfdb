@@ -171,6 +171,37 @@ let cars = {
     }
 };
 
+let users = {
+    name: 'users',
+    fields: {
+        name: {
+            type: 'string'
+        },
+        roles: {
+            type: 'array',
+            typeArray: 'dbref',
+            scheme: 'roles'
+        },
+        lastEdited: {
+            type: 'dbref',
+            scheme: 'users'
+        }
+    }
+};
+
+let roles = {
+    name: 'roles',
+    fields: {
+        name: {
+            type: 'string'
+        },
+        lastEdited: {
+            type: 'dbref',
+            scheme: 'users'
+        }
+    }
+};
+
 let firstCar = {};
 
 // ----------- INIT DBs -----------
@@ -184,6 +215,8 @@ async function initDBs() {
     await jrfDb.addScheme(things);
     await jrfDb.addScheme(cars);
     await jrfDb.addScheme(dates);
+    await jrfDb.addScheme(users);
+    await jrfDb.addScheme(roles);
 
     let connect = {port: 26000, db: 'jrfCarsTests'};
     await jrfDb.setConnection(connect);
@@ -1402,6 +1435,80 @@ let tests = {
 
     },
 
+    async addRoles(key) {
+
+        let scheme = await jrfDb.getScheme('roles');
+
+        let roles = [
+            {name: 'admin'},
+            {name: 'user'},
+            {name: 'read'},
+            {name: 'write'}
+        ];
+
+        let obj = {
+            docs: roles
+        };
+
+        let res = await scheme.add(obj);
+        let okay = res.okay;
+        // console.log(JSON.stringify(res, null, 4));
+
+        if (res.output.length !== 4) {
+            okay = false;
+        }
+
+        if (okay) {
+
+            for (let role of res.output) {
+                glObj[`${role.name}Role`] = role._id;
+            }
+
+            glObj.countValid++;
+            return;
+        }
+
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+
+    },
+
+    async addUsers(key) {
+
+        let scheme = await jrfDb.getScheme('users');
+        let users = [
+            {name: 'admin', roles: [glObj.adminRole, glObj.userRole]},
+            {name: 'admin1', roles: [glObj.adminRole, glObj.writeRole]},
+            {name: 'user', roles: [glObj.userRole, glObj.readRole]}
+        ];
+
+        let obj = {
+            docs: users
+        };
+
+        let res = await scheme.add(obj);
+        let okay = res.okay;
+        // console.log(JSON.stringify(res, null, 4));
+
+        if (res.output.length !== 3) {
+            okay = false;
+        }
+
+        if (okay) {
+
+            for (let user of res.output) {
+                glObj[`${user.name}User`] = user._id;
+            }
+
+            glObj.countValid++;
+            return;
+        }
+
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+
+    },
+
     //// -------- GET --------
 
     async getCars(key) {
@@ -1782,6 +1889,98 @@ let tests = {
 
     },
 
+    async editUsers(key) {
+
+        let scheme = await jrfDb.getScheme('users');
+
+        let res = await scheme.edit({
+            docs: [
+                {
+                    filter: {name: 'admin'},
+                    fields: {
+                        lastEdited: glObj.adminUser
+                    }
+                },
+                {
+                    filter: {name: 'admin1'},
+                    fields: {
+                        lastEdited: glObj.adminUser
+                    }
+                },
+                {
+                    filter: {name: 'user'},
+                    fields: {
+                        lastEdited: glObj.admin1User
+                    }
+                },
+            ]
+        });
+        let okay = res.okay;
+
+        // console.log(JSON.stringify(res, null, 4));
+
+        if (okay) {
+            okay = res.output.length === 3;
+        }
+
+        if (okay) {
+            glObj.countValid++;
+            return;
+        }
+
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+
+    },
+
+    async editRoles(key) {
+
+        let scheme = await jrfDb.getScheme('roles');
+        let res = await scheme.edit({
+            docs: [
+                {
+                    filter: {name: 'admin'},
+                    fields: {
+                        lastEdited: glObj.adminUser
+                    }
+                },
+                {
+                    filter: {name: 'user'},
+                    fields: {
+                        lastEdited: glObj.adminUser
+                    }
+                },
+                {
+                    filter: {name: 'read'},
+                    fields: {
+                        lastEdited: glObj.admin1User
+                    }
+                },
+                {
+                    filter: {name: 'write'},
+                    fields: {
+                        lastEdited: glObj.admin1User
+                    }
+                }
+            ]
+        });
+        let okay = res.okay;
+        // console.log(JSON.stringify(res, null, 4));
+
+        if (okay) {
+            okay = res.output.length === 4;
+        }
+
+        if (okay) {
+            glObj.countValid++;
+            return;
+        }
+
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+
+    },
+
     //// -------- DEL --------
 
     async delThings(key) {
@@ -1937,6 +2136,10 @@ async function deleteAllDocs() {
     res = await scheme.del({filter: {}});
     scheme = await jrfDb.getScheme('dates');
     res = await scheme.del({filter: {}});
+    scheme = await jrfDb.getScheme('users');
+    res = await scheme.del({filter: {}, originalMethod: true});
+    scheme = await jrfDb.getScheme('roles');
+    res = await scheme.del({filter: {}, originalMethod: true});
     // console.log(JSON.stringify(res, null, 4));
 
 }

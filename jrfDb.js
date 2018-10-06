@@ -1449,7 +1449,7 @@ class Scheme {
 
     //// ----------- GET -----------
 
-    async get(obj) {
+    async get(obj, prevIds = []) {
 
         let result = {
             okay: true,
@@ -1579,7 +1579,28 @@ class Scheme {
         if (this.dbrefs.length) {
             if (!resHooks.param.query.noDbrefDocs) {
                 for (let doc of result.output) {
-                    await this.fillDbrefsDoc(doc, resHooks.param.query.dbrefIdOnly);
+
+                    let id = doc._id.toString();
+                    if (doc.oid) {
+                        id = doc.oid.toString();
+                    }
+
+                    let countHellCycle = 0;
+                    for (let el of prevIds) {
+                        if (id === el) {
+                            countHellCycle++;
+                        }
+                    }
+
+                    if (countHellCycle > 1) {
+                        continue;
+                    }
+                    prevIds.push(id);
+
+                    await this.fillDbrefsDoc(doc, resHooks.param.query.dbrefIdOnly, prevIds);
+
+                    prevIds.pop();
+
                 }
             }
         }
@@ -1668,16 +1689,16 @@ class Scheme {
 
     }
 
-    async fillDbrefsDoc(doc, idOnly) {
+    async fillDbrefsDoc(doc, idOnly, prevIds) {
         // console.log('dbrefs');
         // console.log(doc._id);
         // console.log(doc);
         for (let el of this.dbrefs) {
-            await this.fillDbrefDoc(doc, 0, el, idOnly);
+            await this.fillDbrefDoc(doc, 0, el, idOnly, prevIds);
         }
     }
 
-    async fillDbrefDoc(doc, indexPath = 0, mapDbref, idOnly = false) {
+    async fillDbrefDoc(doc, indexPath = 0, mapDbref, idOnly = false, prevIds) {
 
         let arrPath = mapDbref.path.split('.');
         let path = arrPath[indexPath];
@@ -1698,12 +1719,12 @@ class Scheme {
             let newIndexPath = indexPath + 1;
             if (typeof docPath === 'object' && !Array.isArray(docPath)) {
 
-                await this.fillDbrefDoc(doc[path], newIndexPath, mapDbref, idOnly);
+                await this.fillDbrefDoc(doc[path], newIndexPath, mapDbref, idOnly, prevIds);
 
             } else if (typeof docPath === 'object' && Array.isArray(docPath)) {
 
                 for (let i = 0; i < doc[path].length; i++) {
-                    await this.fillDbrefDoc(doc[path][i], newIndexPath, mapDbref, idOnly);
+                    await this.fillDbrefDoc(doc[path][i], newIndexPath, mapDbref, idOnly, prevIds);
                 }
 
             }
@@ -1719,7 +1740,7 @@ class Scheme {
 
         if (typeof docPath === 'object' && !Array.isArray(docPath)) {
 
-            let res = await this.getDbrefDoc(doc[path], schemeForFind, idOnly);
+            let res = await this.getDbrefDoc(doc[path], schemeForFind, idOnly, prevIds);
             if (res) {
                 doc[path] = res;
             }
@@ -1727,7 +1748,7 @@ class Scheme {
         } else if (typeof docPath === 'object' && Array.isArray(docPath)) {
 
             for (let i = 0; i < doc[path].length; i++) {
-                let res = await this.getDbrefDoc(doc[path][i], schemeForFind, idOnly);
+                let res = await this.getDbrefDoc(doc[path][i], schemeForFind, idOnly, prevIds);
                 if (res) {
                     doc[path][i] = res;
                 }
@@ -1737,7 +1758,7 @@ class Scheme {
 
     }
 
-    async getDbrefDoc(docPath, schemeForFind, idOnly) {
+    async getDbrefDoc(docPath, schemeForFind, idOnly, prevIds) {
 
         if (!docPath.oid) {
             return;
@@ -1747,7 +1768,7 @@ class Scheme {
             query: {
                 find: {_id: docPath.oid}
             }
-        });
+        }, prevIds);
 
         if (!res.okay) {
             return;
