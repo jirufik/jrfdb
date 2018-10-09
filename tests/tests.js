@@ -2051,6 +2051,8 @@ let tests = {
 
     },
 
+    //// -------- OTHER --------
+
     async test_idToObjectId(key) {
 
         let scheme = await jrfDb.getScheme('typeBodys');
@@ -2106,6 +2108,44 @@ let tests = {
 
             await scheme._idToObjectId(find);
             okay = find.$or[1]._id.equals(objectID(findOld.$or[1]._id));
+        }
+
+        if (okay) {
+            glObj.countValid++;
+            return;
+        }
+
+        glObj.countInvalid++;
+        console.log(`invalid test ${key}`);
+
+    },
+
+    async testWithoutFields(key) {
+
+        let scheme = await jrfDb.getScheme('users');
+        let withoutFields = {
+            roles: ['lastEdited']
+        };
+        let res = await scheme.get({
+            query: {
+                find: {
+                    name: 'admin'
+                }
+            }
+        }, withoutFields);
+        let okay = res.okay;
+        // console.log(JSON.stringify(res, null, 4));
+
+        if (okay) {
+            okay = res.output.length === 1;
+        }
+
+        if (okay) {
+            okay = res.output[0].roles;
+        }
+
+        if (okay) {
+            okay = !res.output[0].roles[0].lastEdited;
         }
 
         if (okay) {

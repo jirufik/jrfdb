@@ -1449,7 +1449,7 @@ class Scheme {
 
     //// ----------- GET -----------
 
-    async get(obj, prevIds = []) {
+    async get(obj, withoutFields, prevIds = []) {
 
         let result = {
             okay: true,
@@ -1576,6 +1576,8 @@ class Scheme {
         output = (await collection.find(find).sort(sort).skip(skip).limit(limit).toArray());
         result.output = output;
 
+        await this._delFieldsInDocs(result.output, withoutFields);
+
         if (this.dbrefs.length) {
             if (!resHooks.param.query.noDbrefDocs) {
                 for (let doc of result.output) {
@@ -1597,7 +1599,7 @@ class Scheme {
                     }
                     prevIds.push(id);
 
-                    await this.fillDbrefsDoc(doc, resHooks.param.query.dbrefIdOnly, prevIds);
+                    await this.fillDbrefsDoc(doc, resHooks.param.query.dbrefIdOnly, withoutFields, prevIds);
 
                     prevIds.pop();
 
@@ -1689,16 +1691,57 @@ class Scheme {
 
     }
 
-    async fillDbrefsDoc(doc, idOnly, prevIds) {
+    async _delFieldsInDocs(docs, withoutFields) {
+
+        if (typeof docs !== 'object') {
+            return;
+        }
+
+        if (typeof withoutFields !== 'object') {
+            return;
+        }
+
+        if (!withoutFields[this.name]) {
+            return;
+        }
+
+        if (!Array.isArray(withoutFields[this.name])) {
+            return;
+        }
+
+        if (!withoutFields[this.name].length) {
+            return;
+        }
+
+        if (Array.isArray(docs)) {
+            for (let doc of docs) {
+                await this._delFieldsInDoc(doc, withoutFields[this.name]);
+            }
+            return;
+        }
+
+        await this._delFieldsInDoc(docs, withoutFields[this.name]);
+
+    }
+
+    async _delFieldsInDoc(doc, fields) {
+
+        for (let field of fields) {
+            delete doc[field];
+        }
+
+    }
+
+    async fillDbrefsDoc(doc, idOnly, withoutFields, prevIds) {
         // console.log('dbrefs');
         // console.log(doc._id);
         // console.log(doc);
         for (let el of this.dbrefs) {
-            await this.fillDbrefDoc(doc, 0, el, idOnly, prevIds);
+            await this.fillDbrefDoc(doc, 0, el, idOnly, withoutFields, prevIds);
         }
     }
 
-    async fillDbrefDoc(doc, indexPath = 0, mapDbref, idOnly = false, prevIds) {
+    async fillDbrefDoc(doc, indexPath = 0, mapDbref, idOnly = false, withoutFields, prevIds) {
 
         let arrPath = mapDbref.path.split('.');
         let path = arrPath[indexPath];
@@ -1719,12 +1762,12 @@ class Scheme {
             let newIndexPath = indexPath + 1;
             if (typeof docPath === 'object' && !Array.isArray(docPath)) {
 
-                await this.fillDbrefDoc(doc[path], newIndexPath, mapDbref, idOnly, prevIds);
+                await this.fillDbrefDoc(doc[path], newIndexPath, mapDbref, idOnly, withoutFields, prevIds);
 
             } else if (typeof docPath === 'object' && Array.isArray(docPath)) {
 
                 for (let i = 0; i < doc[path].length; i++) {
-                    await this.fillDbrefDoc(doc[path][i], newIndexPath, mapDbref, idOnly, prevIds);
+                    await this.fillDbrefDoc(doc[path][i], newIndexPath, mapDbref, idOnly, withoutFields, prevIds);
                 }
 
             }
@@ -1740,7 +1783,7 @@ class Scheme {
 
         if (typeof docPath === 'object' && !Array.isArray(docPath)) {
 
-            let res = await this.getDbrefDoc(doc[path], schemeForFind, idOnly, prevIds);
+            let res = await this.getDbrefDoc(doc[path], schemeForFind, idOnly, withoutFields, prevIds);
             if (res) {
                 doc[path] = res;
             }
@@ -1748,7 +1791,7 @@ class Scheme {
         } else if (typeof docPath === 'object' && Array.isArray(docPath)) {
 
             for (let i = 0; i < doc[path].length; i++) {
-                let res = await this.getDbrefDoc(doc[path][i], schemeForFind, idOnly, prevIds);
+                let res = await this.getDbrefDoc(doc[path][i], schemeForFind, idOnly, withoutFields, prevIds);
                 if (res) {
                     doc[path][i] = res;
                 }
@@ -1758,7 +1801,7 @@ class Scheme {
 
     }
 
-    async getDbrefDoc(docPath, schemeForFind, idOnly, prevIds) {
+    async getDbrefDoc(docPath, schemeForFind, idOnly, withoutFields, prevIds) {
 
         if (!docPath.oid) {
             return;
@@ -1768,7 +1811,7 @@ class Scheme {
             query: {
                 find: {_id: docPath.oid}
             }
-        }, prevIds);
+        }, withoutFields, prevIds);
 
         if (!res.okay) {
             return;
