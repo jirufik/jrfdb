@@ -947,7 +947,6 @@ class Scheme {
         let notFindId = idDoc;
         if (idDoc) {
             if (typeof idDoc === 'string' || typeof idDoc === 'number') {
-                console.log(notFindId);
                 notFindId = await this.getObjectID(idDoc);
             }
         }
