@@ -1239,7 +1239,7 @@ class Scheme {
             if (doc.hasOwnProperty(path + field) && fieldValue.type === 'array') {
 
                 docValue = doc[path + field];
-                if (typeof docValue !== `object` || !docValue.length) {
+                if (!Array.isArray(docValue)) {
                     result.okay = false;
                     result.description = `Array field not array, path: ${path + field}`;
                     return result;
@@ -1407,7 +1407,7 @@ class Scheme {
                     } else if (fieldValue.typeArray === 'array') {
                         /// array
 
-                        if (typeof elArr !== `object` || !elArr.length) {
+                        if (Array.isArray(elArr)) {
                             result.okay = false;
                             result.description = `Array field "${elArr}" not array, path: ${path + field}`;
                             return result;
